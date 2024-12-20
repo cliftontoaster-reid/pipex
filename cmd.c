@@ -6,7 +6,7 @@
 /*   By: lfiorell <lfiorell@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/12 14:16:28 by lfiorell          #+#    #+#             */
-/*   Updated: 2024/12/13 09:24:11 by lfiorell         ###   ########.fr       */
+/*   Updated: 2024/12/20 17:13:36 by lfiorell         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,13 +78,32 @@ static int	prepare_cmd(t_cmd *c, char const *cmd, char const **envp)
 	return (1);
 }
 
+static void	run_cmds(int *gayosorus, char const **envp, t_cmd *cmd1,
+		t_cmd *cmd2)
+{
+	int	f;
+
+	f = fork();
+	if (f < 0)
+		return (perror("Fork one"));
+	if (!f)
+		child_uwu(gayosorus, cmd1, envp);
+	f = fork();
+	if (f < 0)
+		return (perror("Fork two"));
+	if (!f)
+		child_owo(gayosorus, cmd2, envp);
+	child_owo(gayosorus, cmd2, envp);
+	free_struct(cmd1);
+	free_struct(cmd2);
+}
+
 void	pipex(int in, int out, char const **args, char const **envp)
 {
 	t_cmd	cmd1;
 	t_cmd	cmd2;
 	int		gayosorus[2];
 	int		status;
-	int		f;
 
 	status = 0;
 	pipe(gayosorus);
@@ -94,19 +113,7 @@ void	pipex(int in, int out, char const **args, char const **envp)
 		return ;
 	if (!prepare_cmd(&cmd2, args[3], envp))
 		return ;
-	f = fork();
-	if (f < 0)
-		return (perror("Fork one"));
-	if (!f)
-		child_uwu(gayosorus, &cmd1, envp);
-	f = fork();
-	if (f < 0)
-		return (perror("Fork two"));
-	if (!f)
-		child_owo(gayosorus, &cmd2, envp);
-	child_owo(gayosorus, &cmd2, envp);
-	free_struct(&cmd1);
-	free_struct(&cmd2);
+	run_cmds(gayosorus, envp, &cmd1, &cmd2);
 	waitpid(-1, &status, 0);
 	waitpid(-1, &status, 0);
 }

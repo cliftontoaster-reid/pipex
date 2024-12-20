@@ -1,6 +1,6 @@
 NAME = pipex
 CC = clang
-CFLAGS = -Wall -Wextra -Werror -O3 -flto
+CFLAGS = -Wall -Wextra -Werror -O3 -ffast-math -flto=thin -march=native -pipe -g
 
 SRC = \
 	cmd.c \
@@ -40,4 +40,4 @@ libft/export/libft.a:
 	fi
 	@make -C libft export
 
-.PHONY = all clean fclean re test 
+.PHONY = all clean fclean re test
