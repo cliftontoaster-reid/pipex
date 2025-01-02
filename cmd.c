@@ -6,12 +6,13 @@
 /*   By: lfiorell <lfiorell@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/12 14:16:28 by lfiorell          #+#    #+#             */
-/*   Updated: 2024/12/20 17:13:36 by lfiorell         ###   ########.fr       */
+/*   Updated: 2024/12/23 19:14:04 by lfiorell         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "child.h"
 #include "cmd.h"
+#include "cmd_utils.h"
 #include "find.h"
 #include "free.h"
 #include "libft/export/libft.h"
@@ -51,30 +52,25 @@ static void	init_cmd(t_cmd *c, int pipe)
 // find the path of the command.
 static int	prepare_cmd(t_cmd *c, char const *cmd, char const **envp)
 {
-	char	**args;
-	int		i;
+	t_parsed_cmd	pcmd;
+	int				i;
 
-	args = ft_splitpath(cmd, ' ');
-	if (!args)
-		args[0] = ft_strdup(cmd);
-	c->cmd = ft_strdup(args[0]);
+	pcmd = parse_cmd(cmd);
+	i = 0;
+	while (pcmd.is_args && pcmd.args[i])
+	{
+		c->args[i] = ft_strdup(pcmd.args[i]);
+		free(pcmd.args[i]);
+		i++;
+	}
+	c->cmd = ft_pathfind(pcmd.cmd, (char *const *)envp);
 	if (!c->cmd)
 	{
-		free_strs(args);
+		ft_putbash(pcmd.cmd, "command not found");
+		free(pcmd.cmd);
 		return (0);
 	}
-	i = 1;
-	while (args[i])
-	{
-		c->args[i - 1] = ft_strdup(args[i]);
-		if (!c->args[i++ - 1])
-		{
-			free_strs(args);
-			return (0);
-		}
-	}
-	c->cmd = ft_pathfind(c->cmd, (char *const *)envp);
-	free_strs(args);
+	free(pcmd.cmd);
 	return (1);
 }
 

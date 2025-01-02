@@ -1,6 +1,6 @@
 NAME = pipex
 CC = clang
-CFLAGS = -Wall -Wextra -Werror -O3 -ffast-math -flto=thin -pipe -g
+CFLAGS = -Wall -Wextra -Werror
 
 SRC = \
 	cmd.c \
@@ -9,6 +9,7 @@ SRC = \
 	child.c \
 	free.c \
 	pipex.c \
+	cmd_utils.c \
 
 OBJ = $(SRC:.c=.o) 
 
